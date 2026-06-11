@@ -1,0 +1,151 @@
+
+well-log-ml/
+│
+├── README.md
+├── requirements.txt
+├── setup.py
+├── .gitignore
+├── LICENSE
+│
+├── data/
+│   ├── raw/
+│   ├── interim/
+│   ├── processed/
+│   └── external/
+│
+├── notebooks/
+│   ├── 01-data-exploration.ipynb
+│   ├── 02-feature-engineering.ipynb
+│   └── 03-model-training.ipynb
+│
+├── src/
+│   ├── __init__.py
+│   │
+│   ├── data/
+│   │   ├── make_dataset.py
+│   │
+│   ├── features/
+│   │   ├── build_features.py
+│   │
+│   ├── models/
+│   │   ├── train_model.py
+│   │   └── predict_model.py
+│   │
+│   └── visualization/
+│       └── visualize.py
+│
+├── models/
+│   └── trained_model.pkl
+│
+├── dashboard/
+│   └── app.py
+│
+├── reports/
+│   ├── figures/
+│   └── report.md
+│
+└── tests/
+
+
+
+
+
+well-log-interpretation/
+│
+├── data/
+│   ├── raw/
+│   └── processed/
+│
+├── notebooks/
+│   └── exploration.ipynb
+│
+├── src/
+│   ├── data_loader.py
+│   ├── preprocessing.py
+│   ├── petrophysics.py
+│   ├── visualization.py
+│   └── model.py
+│
+├── dashboard/
+│   └── app.py
+│
+├── tests/
+│
+├── requirements.txt
+├── README.md
+├── .gitignore
+└── main.py
+
+
+well_log_analyser/
+│
+├── well_log_analyser/          # Main library package
+│   ├── __init__.py
+│   ├── io/                     # Data loading & export
+│   │   ├── __init__.py
+│   │   ├── las_reader.py
+│   │   ├── csv_reader.py
+│   │   └── exporter.py
+│   │
+│   ├── visualization/          # All plotting functions
+│   │   ├── __init__.py
+│   │   ├── log_tracks.py
+│   │   ├── crossplots.py
+│   │   ├── correlation.py
+│   │   └── interactive.py
+│   │
+│   ├── petrophysics/           # Core calculations
+│   │   ├── __init__.py
+│   │   ├── shale_volume.py
+│   │   ├── porosity.py
+│   │   ├── water_saturation.py
+│   │   ├── permeability.py
+│   │   └── net_pay.py
+│   │
+│   ├── formation_evaluation/   # Formation analysis
+│   │   ├── __init__.py
+│   │   ├── lithology.py
+│   │   ├── fluid_contacts.py
+│   │   ├── pay_zones.py
+│   │   └── pressure.py
+│   │
+│   ├── ml/                     # Machine learning models
+│   │   ├── __init__.py
+│   │   ├── facies.py
+│   │   ├── curve_reconstruction.py
+│   │   └── anomaly_detection.py
+│   │
+│   └── utils/                  # Shared helpers
+│       ├── __init__.py
+│       ├── qc.py
+│       ├── despike.py
+│       ├── normalization.py
+│       ├── depth_utils.py
+│       └── unit_converter.py
+│
+├── notebooks/                  # Standalone notebooks (no library dependency)
+│   ├── 01_data_loading.ipynb
+│   ├── 02_visualization.ipynb
+│   ├── 03_petrophysics.ipynb
+│   ├── 04_formation_evaluation.ipynb
+│   ├── 05_ml_facies.ipynb
+│   └── 06_full_workflow.ipynb
+│
+├── data/                       # Sample well data
+│   ├── sample_well.las
+│   └── sample_well.csv
+│
+├── tests/                      # Unit tests
+│   ├── __init__.py
+│   ├── test_io.py
+│   ├── test_petrophysics.py
+│   ├── test_visualization.py
+│   └── test_formation_evaluation.py
+│
+├── docs/                       # Documentation
+│   ├── api_reference.md
+│   └── examples.md
+│
+├── requirements.txt
+├── setup.py                    # or pyproject.toml
+└── README.md
