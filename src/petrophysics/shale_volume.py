@@ -64,7 +64,7 @@ def linear_shale_model(gr_values, gr_shale, gr_sand):
         if gr_shale == gr_sand:
             raise ValueError("Shale and sand values are equal, cannot compute GR.")
         gr_normalized = (gr_values - gr_sand) / (gr_shale - gr_sand)
-        return gr_normalized
+        return gr_normalized.clip(0, 1)
     except Exception as e:
         print(f"Error in linear shale model: {e}")
         return None
@@ -88,7 +88,7 @@ def larionov_shale_model(gr_values, gr_shale, gr_sand, age_rock):
         V_shale = 0.083 * (2 ** (3.7 * gr_normalized) - 1)
     else:
         raise ValueError("Invalid age_rock value. Must be 'pre-tertiary' or 'tertiary'.")
-    return V_shale
+    return V_shale.clip(0, 1)
 
 def steiber_shale_model(gr_values, gr_shale, gr_sand):
     """
@@ -102,7 +102,7 @@ def steiber_shale_model(gr_values, gr_shale, gr_sand):
     """
     gr_normalized = (gr_values - gr_sand) / (gr_shale - gr_sand)
     V_shale = gr_normalized / (3 - 2*gr_normalized)
-    return V_shale
+    return V_shale.clip(0, 1)
 
 def clavier_shale_model(gr_values, gr_shale, gr_sand):
     """
@@ -116,7 +116,7 @@ def clavier_shale_model(gr_values, gr_shale, gr_sand):
     """
     gr_normalized = (gr_values - gr_sand) / (gr_shale - gr_sand)
     V_shale = 1.7 - (3.38 - (gr_normalized + 0.7)**2)**0.5
-    return V_shale
+    return V_shale.clip(0, 1)
 
 def dresser_atlas_shale_model(gr_values, gr_shale, gr_sand):
     """
@@ -130,7 +130,7 @@ def dresser_atlas_shale_model(gr_values, gr_shale, gr_sand):
     """
     gr_normalized = (gr_values - gr_sand) / (gr_shale - gr_sand)
     V_shale = gr_normalized / (0.6 + 0.4*gr_normalized)
-    return V_shale
+    return V_shale.clip(0, 1)
 
 def calculate_shale_volume(df, gr_col = 'GR', depth_col = 'DEPTH', constant_selector = None, shale_model = None):
     """
@@ -175,3 +175,30 @@ def calculate_shale_volume(df, gr_col = 'GR', depth_col = 'DEPTH', constant_sele
         return linear_shale_model(gr_values, gr_shale, gr_sand)
 
 
+def calculate_non_shale_logs(df, gr_col = 'GR', depth_col = 'DEPTH', vsh_col = 'Vsh', logs_convert = None, shale_properties = None):
+    """
+    Converts the logs to non-shale values using the calculated shale volume. This is done by finding the shale point where Vsh is 1.0 and using that to calculate the non-shale values for the specified logs.
+    Args:        
+        df (pd.DataFrame): The DataFrame containing the logs.
+        gr_col (str): The name of the gamma ray column in the DataFrame.
+        depth_col (str): The name of the depth column in the DataFrame.
+        vsh_col (str): The name of the shale volume column in the DataFrame.
+        logs_convert (list): A list of log names to convert to non-shale values.
+        shale_properties (dict): A dictionary containing the shale properties for each log.
+    Returns:
+        pd.DataFrame: The DataFrame with the non-shale logs added.
+        dict: A dictionary containing the shale properties for each log.    
+    """
+    shale_point = df.iloc[np.where(df[vsh_col] == 1.0)[0]] if shale_properties is None else pd.DataFrame(shale_properties, index=[0])
+    if shale_point.empty:
+        print("No shale point found where Vsh is exactly 1.0.")
+        shale_point = df.iloc[df[vsh_col].argmax()]
+    print(f"Shale point:\n{shale_point}")
+    shale_properties = {}
+    for log in logs_convert:
+        shale_property = np.mean(shale_point[log].values)
+        shale_properties[log] = shale_property
+        print(f"Shale property for {log}: {shale_property}")
+        df[f"{log}_ns"] = (df[log] - shale_property*df[vsh_col]) / (1 - df[vsh_col])
+        df[f"{log}_ns"] = df[f"{log}_ns"].replace([np.inf, -np.inf], 0.)
+    return df, shale_properties
