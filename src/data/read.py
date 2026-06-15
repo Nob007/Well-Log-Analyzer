@@ -4,6 +4,14 @@ import os
 import numpy as np
 
 def read_log(file_path, file_name)->pd.DataFrame:
+    """
+    Reads a log file in CSV, LAS, or Excel format and returns a pandas DataFrame.
+    Args: 
+        file_path (str): The path to the directory containing the log file.
+        file_name (str): The name of the log file to be read.
+    Returns:
+        pd.DataFrame: A DataFrame containing the log data, with invalid values replaced by NaN.
+    """
     full_path = os.path.join(file_path, file_name)
     _, ext = os.path.splitext(file_name.lower())
     try:
